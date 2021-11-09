@@ -1,46 +1,75 @@
-# Getting Started with Create React App
+# yarn berry with CRA
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+cra 로 프로젝트 생성하고 yarn berry 로 마이그레이션 해준다.
 
-## Available Scripts
+```sh
+$ yarn --version
+// 1.22.10
 
-In the project directory, you can run:
+$ npx create-react-app my-app --template typescript
+// cra 프로젝트 생성
 
-### `yarn start`
+$ cd my-app
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+$ rm -rf node_modules
+$ rm -rf yarn.lock
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+$ yarn set version berry
+// yarn berry 버전으로 변경 (해당 프로젝트에서만 local로 변경되는 것임)
+// .yarn, .yarnrc.yml 생성됨
+// .yarnrc.yml 파일에 nodeLinker: node-modules 로 되어 있다면 삭제(기존 node-modules 방식으로 관리됨)
 
-### `yarn test`
+$ yarn --version
+// 3.1.0
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+$ yarn install
+```
 
-### `yarn build`
+typescript 사용을 위해 typescript plugin 을 import 시켜준다.
+자체 types를 포함하지 않는 패키지를 추가할 때 @types/ 패키지를 package.json 폴더에 종속성으로 자동으로 추가
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```sh
+$ yarn plugin import typescript
+// .yarn/plugins/@yarnpkg/plugin-typescript.cjs 생성됨
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+vscode ide 설정
+- extension 으로 zipfs 설치 (zip 아카이브에서 직접 파일을 읽을 수 있도록 VSCode에 지원을 추가)
+- Editor SDK 설정 (typescript와 eslint 설정을 위해 명시적으로 활성화 필요)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```sh
+$ yarn dlx @yarnpkg/sdks vscode
+// typescript 와 eslint, prettier sdk 가 설치됨 (eslint, prettier 이미 설치 되어 있어야 설치됨)
+```
 
-### `yarn eject`
+- command + shift + p키 (맥북 기준)를 눌러 TypeScript: Select TypeScript Version..을 검색해 Use Workspace Version을 선택
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Zero-Install 사용유무(.gitignore 파일 설정)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```sh
+# Zero-Install 사용한다면
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+# Zero-Install 사용하지 않는다면
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+다른 registry(사내 저장소) 를 사용한다면 .yarnrc.yml 파일에 아래 내용설정
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```sh
+npmRegistryServer: 'http://nexus3.test.com/'
+unsafeHttpWhitelist: 
+  - nexus3.test.com
+```
