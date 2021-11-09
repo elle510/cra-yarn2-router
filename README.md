@@ -66,7 +66,7 @@ Zero-Install 사용유무(.gitignore 파일 설정)
 .pnp.*
 ```
 
-다른 registry(사내 저장소) 를 사용한다면 .yarnrc.yml 파일에 아래 내용설정
+다른 registry(사내 저장소) 를 사용한다면 .yarnrc.yml 파일에 아래 내용 추가 설정
 
 ```sh
 npmRegistryServer: 'http://nexus3.test.com/'
